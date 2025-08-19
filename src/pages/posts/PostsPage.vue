@@ -4,10 +4,10 @@
   <div v-else-if="postStore.error">{{ postStore.error }} </div>
 
   <div v-else>
-    <PostList :posts="postStore.posts" @selectPost="handle"/>
+    <PostList :posts="postStore.posts" @selectPost="handleSelectPost"/>
     <Pagination
       :page="postStore.page"
-      :total="postStore.totalPage"
+      :total="postStore.totalPages"
       @changePage="postStore.loadPosts"
       />
   </div>
@@ -26,9 +26,6 @@ const handleSelectPost = async (postId) => {
 onMounted(()=> {
   postStore.loadPosts(postStore.page);
 })
-
-
- 
 
 </script>
 
