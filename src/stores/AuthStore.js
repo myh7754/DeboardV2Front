@@ -13,7 +13,6 @@ export const useAuthStore = defineStore("auth", () => {
         try {
             signUp(form);
         } catch (err) {
-            console.log("처음 회원가입 에러 처리");
             error.value = err.response?.data?.message || "회원가입 실패";
             throw err;
         } finally {

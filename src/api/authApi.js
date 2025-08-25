@@ -26,7 +26,6 @@ export const signUp = async (data) => {
 
 export const loginRequest = async (signInRequest) => {
     const res =await api.post(`${API_URL}/signin`, signInRequest);
-    return res.data;
 }
 
 export const logout = async () => {

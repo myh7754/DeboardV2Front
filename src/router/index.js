@@ -3,6 +3,8 @@ import MainLayout from '../layout/MainLayout.vue'
 import PostsPage from '../pages/posts/PostsPage.vue'
 import SignupPage from '../pages/auth/SignupPage.vue'
 import LoginPage from '../pages/auth/LoginPage.vue'
+import PostCreatePage from '../pages/posts/PostCreatePage.vue'
+import PostDetail from '../pages/posts/PostDetail.vue'
 
 
 const routes = [
@@ -11,8 +13,8 @@ const routes = [
         children: [
             // post
             { path: '/posts', component: PostsPage },
-            // { path: '/posts/new', component: PostCreate },
-            // { path: '/posts/:id', component: PostDetail, props: true },
+            { path: '/posts/new', component: PostCreatePage },
+            { path: '/posts/:id', component: PostDetail, props: true },
             // { path: '/posts/:id/edit', component: PostEdit, props: true },
             { path: '/login', component: LoginPage },
             { path: '/signup', component: SignupPage },
