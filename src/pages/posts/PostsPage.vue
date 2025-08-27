@@ -4,7 +4,7 @@
   <div v-else-if="postStore.error">{{ postStore.error }} </div> -->
 
   <div>
-    <PostList :posts="postStore.posts" @click="handleSelectPost"/>
+    <PostList :posts="postStore.posts" @selectPost="handleSelectPost"/>
     <Pagination
       :page="postStore.page"
       :total="postStore.totalPages"

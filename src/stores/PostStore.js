@@ -8,20 +8,20 @@ export const usePostStore = defineStore('post', () => {
     const page = ref(1);
     const totalPages = ref(1);
 
-    const loadPosts = async (pageNumber = 0) => {
+    const loadPosts = async (pageNumber = 1) => {
         try {
-            const data = await fetchPosts(pageNumber,10);
+            const data = await fetchPosts(pageNumber - 1, 2);
             posts.value = data.content;
-            totalPages.value = data.totalPages;
-            page.value = data.number;
+            totalPages.value = data.page.totalPages;
+            page.value = data.page.number + 1;
         } catch (err) {
             throw err;
-        } 
+        }
     };
 
     const loadPostById = async (id) => {
         try {
-            selectedPost.value = await fetchPostById(id);
+            postDetail.value = await fetchPostById(id);
         } catch (err) {
             // error.value = err.response?.data?.message || "게시글을 불러오지 못했습니다.";
             throw err;
@@ -46,6 +46,10 @@ export const usePostStore = defineStore('post', () => {
             if (idx !== -1) {
                 posts.value[idx] = { ...posts.value[idx], ...postData };
             }
+            // postDetail도 업데이트
+            if (postDetail.value?.id === id) {
+                postDetail.value = { ...postDetail.value, ...postData };
+            }
         } catch (err) {
             // error.value = err.response?.data?.message || "게시글 수정 실패";
             throw err;
@@ -55,7 +59,26 @@ export const usePostStore = defineStore('post', () => {
     const deletePost = async (id) => {
         try {
             await deletePostById(id);
-            posts.value = posts.value.filter((p) => p.id !== id);
+
+            // 삭제 후 현재 페이지의 게시물 수 확인
+            if (posts.value.length === 1) {
+                // 현재 페이지가 마지막 페이지이고 유일한 항목을 삭제한 경우
+                if (page.value === totalPages.value) {
+                    // 이전 페이지가 있는 경우 이전 페이지로 이동
+                    if (page.value > 1) {
+                        await loadPosts(page.value - 1);
+                    } else {
+                        // 첫 페이지인 경우 빈 배열로 설정
+                        posts.value = [];
+                    }
+                } else {
+                    // 마지막 페이지가 아닌 경우 현재 페이지 유지 (다음 페이지 항목이 올라옴)
+                    await loadPosts(page.value);
+                }
+            } else {
+                // 여러 항목이 있는 경우 현재 페이지 다시 로드
+                await loadPosts(page.value);
+            }
         } catch (err) {
             // error.value = err.response?.data?.message || "게시글 삭제 실패";
             throw err;
