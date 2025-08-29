@@ -35,3 +35,7 @@ export const logout = async () => {
 export const oauthLoginRequest = async (provider) => {
     window.location.href = `${baseURL}/oauth2/authorization/${provider}`;
 }
+
+export const authCheck = async (entityType, id) => {
+    await api.get(`${API_URL}/${entityType}/${id}`);
+}

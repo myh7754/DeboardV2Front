@@ -17,8 +17,8 @@
 import { onMounted } from 'vue';
 import { usePostStore } from '../../stores/PostStore';
 import PostList from '../../components/posts/PostList.vue';
-import Pagination from '../../components/posts/Pagination.vue';
 import { useRouter } from 'vue-router';
+import Pagination from '../../components/common/Pagination.vue';
 
 const postStore = usePostStore();
 const router = useRouter();

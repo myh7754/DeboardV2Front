@@ -34,7 +34,7 @@ export const useAuthStore = defineStore("auth", () => {
         const res = await logout();
         isLoggedIn.value = false;
     };
-
+    
     // const oauthLogin = async (provider, data) => {
     //     const data = await oauthLoginRequest(provider,data);
     //     user.value = data.user;

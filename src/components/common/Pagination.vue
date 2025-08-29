@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="page && total && total >1">
     <!-- 이전 버튼 -->
     <button :disabled="page <= 1" @click="changePage(page - 1)">
       이전

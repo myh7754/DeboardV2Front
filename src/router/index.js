@@ -7,6 +7,7 @@ import LoginPage from '../pages/auth/LoginPage.vue'
 import PostCreatePage from '../pages/posts/PostCreatePage.vue'
 import PostDetail from '../pages/posts/PostDetail.vue'
 import PostEditPage from '../pages/posts/PostEditPage.vue'
+import { authCheck } from '../api/authApi'
 
 
 const routes = [
@@ -17,7 +18,14 @@ const routes = [
             { path: '/posts', component: PostsPage },
             { path: '/posts/new', component: PostCreatePage , meta: { requiresAuth: true }},
             { path: '/posts/:id', component: PostDetail, props: true },
-            { path: '/posts/:postId/edit', component: PostEditPage, props:true, meta: { requiresAuth: true } },
+            { path: '/posts/:postId/edit', component: PostEditPage, 
+                props:true, 
+                meta: { 
+                    requiresAuth: true ,
+                    requiresOwner: true,
+                    entityType: "POST",
+                    idParam: 'postId'
+                } },
             { path: '/login', component: LoginPage },
             { path: '/signup', component: SignupPage },
             // { path: '/signup', component: SignUp },
@@ -37,7 +45,7 @@ const router = createRouter({
 
 
 // 글로벌 가드
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // to: 이동할 라우트 객체
   // from: 현재 라우트 객체
   // next: 이동 허용 / 차단 / 리다이렉트 함수
@@ -46,6 +54,20 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {
     alert("로그인이 필요합니다");
     return next({ path: '/login' }); // 로그인 페이지로 리다이렉트
+  }
+
+  if (to.meta.requiresOwner) {
+    try {
+        const entityType = to.meta.entityType;
+        const idParam = to.meta.idParam; // postId, commentId 등
+        const id = to.params[idParam]; // 이게 진자 id값
+
+        await authCheck(entityType,id);
+        return next();
+    } catch (err) {
+        alert(err.response?.data?.message)
+        return;
+    }
   }
   next();
 });
