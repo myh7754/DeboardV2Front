@@ -1,15 +1,20 @@
 <template>
-  <div>게시글 목록 페이지</div>
-  <!-- <div v-if="postStore.isLoading">로딩 중... </div>
-  <div v-else-if="postStore.error">{{ postStore.error }} </div> -->
+  <div class="space-y-6">
+    <!-- 페이지 헤더 -->
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-bold text-base-content">게시글 목록</h1>
+      <div class="text-sm text-base-content/70">
+        총 {{ postStore.totalPages * 10 }}개의 게시글
+      </div>
+    </div>
 
-  <div>
-    <PostList :posts="postStore.posts" @selectPost="handleSelectPost"/>
-    <Pagination
-      :page="postStore.page"
-      :total="postStore.totalPages"
-      @changePage="postStore.loadPosts"
-      />
+    <!-- 게시글 목록 -->
+    <div class="bg-base-100 rounded-lg shadow-lg p-6">
+      <PostList :posts="postStore.posts" @selectPost="handleSelectPost" />
+    </div>
+
+    <!-- 페이지네이션 -->
+    <Pagination :page="postStore.page" :total="postStore.totalPages" @changePage="postStore.loadPosts" />
   </div>
 </template>
 
@@ -26,16 +31,15 @@ const handleSelectPost = async (postId) => {
   router.push(`/posts/${postId}`)
 }
 
-onMounted(async ()=> {
+onMounted(async () => {
   try {
     await postStore.loadPosts(postStore.page);
-  } catch(err) {
-    err.value = err.response?.data?.message || "게시글 목록을 불러오지 못했습니다.";
+  } catch (err) {
+    console.error("게시글 목록 로딩 에러:", err);
+    alert(err.response?.data?.message || "게시글 목록을 불러오지 못했습니다.");
   }
 })
 
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

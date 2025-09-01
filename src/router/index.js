@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/AuthStore'
 import MainLayout from '../layout/MainLayout.vue'
+import HomePage from '../pages/HomePage.vue'
 import PostsPage from '../pages/posts/PostsPage.vue'
 import SignupPage from '../pages/auth/SignupPage.vue'
 import LoginPage from '../pages/auth/LoginPage.vue'
@@ -14,6 +15,8 @@ const routes = [
     {
         path: '/', component: MainLayout,
         children: [
+            // 홈페이지
+            { path: '/', component: HomePage },
             // post
             { path: '/posts', component: PostsPage },
             { path: '/posts/new', component: PostCreatePage , meta: { requiresAuth: true }},
@@ -64,7 +67,7 @@ router.beforeEach(async (to, from, next) => {
 
         await authCheck(entityType,id);
         return next();
-    } catch (err) {
+    } catch (err) { 
         alert(err.response?.data?.message)
         return;
     }

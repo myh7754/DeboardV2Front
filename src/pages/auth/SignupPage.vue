@@ -1,44 +1,147 @@
 <template>
-    <div>
-        <h1>회원가입</h1>
-        <form @submit.prevent="onSubmit">
-
-            <!-- 닉네임 -->
-            <div>
-                <label for="nickname">닉네임</label>
-                <input v-model="form.nickname" type="text" required />
-                <button type="button" @click="checkNicknameDup" :disabled="loading.nickname">중복확인</button>
-                <span v-if="nicknameCheckMessage">{{ nicknameCheckMessage }}</span>
+    <div class="min-h-screen flex items-center justify-center bg-base-200 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <!-- 회원가입 헤더 -->
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-base-content mb-2">회원가입</h1>
+                <p class="text-base-content/70">Deboard에 가입하고 시작하세요</p>
             </div>
 
-            <!-- 이메일 -->
-            <div>
-                <label for="email">이메일</label>
-                <input v-model="form.email" type="email" required />
-                <button type="button" @click="checkEmailDup" :disabled="loading.email">중복확인</button>
-                <span v-if="emailCheckMessage && verify.email===false">{{ emailCheckMessage }}</span>
-                <span v-else-if="verify.email">{{ emailVerifyMessage }}</span>
+            <!-- 회원가입 폼 -->
+            <div class="bg-base-100 rounded-lg shadow-lg p-8">
+                <form @submit.prevent="onSubmit" class="space-y-6">
+                    <!-- 닉네임 -->
+                    <div class="form-control">
+                        <label for="nickname" class="label">
+                            <span class="label-text font-semibold">닉네임</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <input 
+                                id="nickname"
+                                v-model="form.nickname" 
+                                type="text" 
+                                required 
+                                placeholder="닉네임을 입력하세요"
+                                class="input input-bordered flex-1 focus:input-primary"
+                            />
+                            <button 
+                                type="button" 
+                                @click="checkNicknameDup" 
+                                :disabled="loading.nickname || !form.nickname.trim()"
+                                class="btn btn-outline btn-sm"
+                            >
+                                <span v-if="loading.nickname" class="loading loading-spinner loading-xs"></span>
+                                {{ loading.nickname ? '확인중' : '중복확인' }}
+                            </button>
+                        </div>
+                        <div v-if="nicknameCheckMessage" class="label">
+                            <span class="label-text-alt" :class="verify.nickname ? 'text-success' : 'text-error'">
+                                {{ nicknameCheckMessage }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 이메일 -->
+                    <div class="form-control">
+                        <label for="email" class="label">
+                            <span class="label-text font-semibold">이메일</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <input 
+                                id="email"
+                                v-model="form.email" 
+                                type="email" 
+                                required 
+                                placeholder="이메일을 입력하세요"
+                                class="input input-bordered flex-1 focus:input-primary"
+                            />
+                            <button 
+                                type="button" 
+                                @click="checkEmailDup" 
+                                :disabled="loading.email || !form.email.trim()"
+                                class="btn btn-outline btn-sm"
+                            >
+                                <span v-if="loading.email" class="loading loading-spinner loading-xs"></span>
+                                {{ loading.email ? '발송중' : '인증발송' }}
+                            </button>
+                        </div>
+                        <div v-if="emailCheckMessage" class="label">
+                            <span class="label-text-alt" :class="verify.email ? 'text-success' : 'text-error'">
+                                {{ emailCheckMessage }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 이메일 인증 코드 -->
+                    <div v-if="emailSent && verify.email !== true" class="form-control">
+                        <label for="code" class="label">
+                            <span class="label-text font-semibold">이메일 인증 코드</span>
+                            <span class="label-text-alt text-warning font-mono">{{ timerText }}</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <input 
+                                id="code" 
+                                v-model="emailCode" 
+                                type="text" 
+                                placeholder="인증 코드를 입력하세요"
+                                class="input input-bordered flex-1 focus:input-primary"
+                            />
+                            <button 
+                                type="button" 
+                                @click="verifyCode" 
+                                :disabled="loading.verifyCode || !emailCode.trim()"
+                                class="btn btn-primary btn-sm"
+                            >
+                                <span v-if="loading.verifyCode" class="loading loading-spinner loading-xs"></span>
+                                {{ loading.verifyCode ? '확인중' : '인증확인' }}
+                            </button>
+                        </div>
+                        <div v-if="emailVerifyMessage" class="label">
+                            <span class="label-text-alt" :class="verify.email ? 'text-success' : 'text-error'">
+                                {{ emailVerifyMessage }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 비밀번호 -->
+                    <div class="form-control">
+                        <label for="password" class="label">
+                            <span class="label-text font-semibold">비밀번호</span>
+                        </label>
+                        <input 
+                            id="password" 
+                            v-model="form.password" 
+                            type="password" 
+                            required 
+                            placeholder="비밀번호를 입력하세요"
+                            class="input input-bordered w-full focus:input-primary"
+                        />
+                    </div>
+
+                    <!-- 회원가입 버튼 -->
+                    <button 
+                        type="submit"
+                        :disabled="!verify.nickname || !verify.email || !form.password.trim()"
+                        class="btn btn-primary w-full btn-lg gap-2"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                        회원가입
+                    </button>
+                </form>
             </div>
 
-            <!-- 이메일 인증 -->
-            <div v-if="emailSent && verify.email !== true">
-                <label for="code">이메일 인증 코드</label>
-                <input id="code" v-model="emailCode" type="text" />
-                <div>
-                    {{ timerText }}
-                </div>
-                <button type="button" @click="verifyCode" :disabled="loading.verifyCode">인증 확인</button>
-                <span v-if="emailVerifyMessage">{{ emailVerifyMessage }}</span>
+            <!-- 로그인 링크 -->
+            <div class="text-center">
+                <p class="text-base-content/70">
+                    이미 계정이 있으신가요? 
+                    <router-link to="/login" class="link link-primary font-semibold">
+                        로그인
+                    </router-link>
+                </p>
             </div>
-
-            <!-- 비밀번호 -->
-            <div>
-                <label for="password">비밀번호</label>
-                <input id="password" v-model="form.password" type="password" required />
-            </div>
-
-            <button type="submit">회원가입</button>
-        </form>
+        </div>
     </div>
 </template>
 

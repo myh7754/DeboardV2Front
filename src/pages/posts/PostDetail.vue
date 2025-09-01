@@ -1,16 +1,80 @@
 <template>
-  <div v-if="postStore.postDetail">
-    <div>게시글 번호 : {{ postStore.postDetail.id }}</div>
-    <h1>제목 : {{ postStore.postDetail.title }}</h1>
-    <div>작성자 : {{ postStore.postDetail.nickname }}</div>
-    <PostOptionMenu :postId="postStore.postDetail.id" />
-    <p>내용 : {{ postStore.postDetail.content }}</p>
+  <div v-if="postStore.postDetail" class="space-y-6">
+    <!-- 뒤로가기 버튼 -->
+    <div class="flex items-center gap-4">
+      <button 
+        @click="$router.go(-1)" 
+        class="btn btn-ghost btn-sm gap-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        뒤로가기
+      </button>
+    </div>
 
-    <CommentsSection :postId="postId" />
+    <!-- 게시글 상세 정보 -->
+    <div class="bg-base-100 rounded-lg shadow-lg p-8">
+      <!-- 게시글 헤더 -->
+      <div class="border-b border-base-300 pb-6 mb-6">
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold text-base-content mb-4">
+              {{ postStore.postDetail.title }}
+            </h1>
+            <div class="flex items-center gap-6 text-sm text-base-content/70">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="font-medium">{{ postStore.postDetail.nickname }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                </svg>
+                <span>{{ formatDate(postStore.postDetail.createdAt) }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                <span>게시글 #{{ postStore.postDetail.id }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="ml-4">
+            <PostOptionMenu :postId="postStore.postDetail.id" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 게시글 내용 -->
+      <div class="prose prose-lg max-w-none">
+        <div class="whitespace-pre-wrap text-base-content leading-relaxed">
+          {{ postStore.postDetail.content }}
+        </div>
+      </div>
+    </div>
+
+    <!-- 댓글 섹션 -->
+    <div class="bg-base-100 rounded-lg shadow-lg p-6">
+      <h2 class="text-2xl font-bold text-base-content mb-6 flex items-center gap-2">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
+        </svg>
+        댓글
+      </h2>
+      <CommentsSection :postId="postId" />
+    </div>
   </div>
 
-  <div v-else>
-    게시글을 불러오는 중...
+  <!-- 로딩 상태 -->
+  <div v-else class="flex justify-center items-center py-20">
+    <div class="text-center">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+      <p class="mt-4 text-base-content/70">게시글을 불러오는 중...</p>
+    </div>
   </div>
 </template>
 
@@ -21,11 +85,13 @@ import { useCommentsStore } from '../../stores/CommentStore';
 import { useRoute } from 'vue-router';
 import PostOptionMenu from '../../components/posts/PostOptionMenu.vue';
 import CommentsSection from '../comments/CommentsSection.vue';
+import { useDateFormat } from '../../composable/useDateFormat';
 
 const postStore = usePostStore();
 const commentsStore = useCommentsStore();
 const route = useRoute();
 const postId = Number(route.params.id);
+const { formatDate } = useDateFormat();
 
 onMounted(async () => {
   try {

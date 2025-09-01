@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { loadCommentsApi, saveCommentApi, deleteCommentApi, updateCommentApi, loadReplies } from "../api/commentApi";
+import { loadCommentsApi, saveCommentApi, deleteCommentApi, updateCommentApi, loadRepliesApi } from "../api/commentApi";
 
 export const useCommentsStore = defineStore("comments", () => {
   const comments = ref([]);
@@ -26,6 +26,11 @@ export const useCommentsStore = defineStore("comments", () => {
 
   const updateComment = async (id, form) => {
     await updateCommentApi(id, form);
+  };
+
+  const loadReplies = async (commentsId, pageNum = 1) => {
+    const res = await loadRepliesApi(commentsId, pageNum);
+    return res;
   };
 
   return { comments, page, totalPages, loadComments, loadReplies, saveComment, deleteComment, updateComment };

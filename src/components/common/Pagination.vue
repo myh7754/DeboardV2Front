@@ -1,24 +1,56 @@
 <template>
-  <div v-if="page && total && total >1">
-    <!-- 이전 버튼 -->
-    <button :disabled="page <= 1" @click="changePage(page - 1)">
-      이전
-    </button>
+  <div v-if="page && total && total > 1" class="flex justify-center mt-8">
+    <div class="join shadow-lg rounded-box">
+      <!-- 맨 처음 -->
+      <button
+        class="join-item btn btn-sm md:btn-md"
+        :class="{ 'btn-disabled': page === 1, 'btn-ghost': page !== 1 }"
+        @click="changePage(1)"
+      >
+        «
+      </button>
 
-    <!-- 페이지 번호 버튼 -->
-    <button
-      v-for="p in pageNumbers"
-      :key="p"
-      @click="changePage(p)"
-      :disabled="p === page"
-    >
-      {{ p }}
-    </button>
+      <!-- 이전 -->
+      <button 
+        class="join-item btn btn-sm md:btn-md"
+        :class="{ 'btn-disabled': page <= 1, 'btn-outline': page > 1 }"
+        @click="changePage(page - 1)"
+      >
+        ‹
+      </button>
 
-    <!-- 다음 버튼 -->
-    <button :disabled="page >= total" @click="changePage(page + 1)">
-      다음
-    </button>
+      <!-- 페이지 번호 -->
+      <button
+        v-for="p in pageNumbers"
+        :key="p"
+        class="join-item btn btn-sm md:btn-md"
+        :class="{
+          'btn-primary': p === page,
+          'btn-ghost': p !== page
+        }"
+        @click="changePage(p)"
+      >
+        {{ p }}
+      </button>
+
+      <!-- 다음 -->
+      <button 
+        class="join-item btn btn-sm md:btn-md"
+        :class="{ 'btn-disabled': page >= total, 'btn-outline': page < total }"
+        @click="changePage(page + 1)"
+      >
+        ›
+      </button>
+
+      <!-- 맨 끝 -->
+      <button
+        class="join-item btn btn-sm md:btn-md"
+        :class="{ 'btn-disabled': page === total, 'btn-ghost': page !== total }"
+        @click="changePage(total)"
+      >
+        »
+      </button>
+    </div>
   </div>
 </template>
 
@@ -26,8 +58,8 @@
 import { computed } from "vue";
 
 const props = defineProps({
-  page: { type: Number, required: true }, // 현재 페이지
-  total: { type: Number, required: true } // 전체 페이지 수
+  page: { type: Number, required: true },
+  total: { type: Number, required: true }
 });
 
 const emit = defineEmits(["changePage"]);
@@ -38,9 +70,8 @@ const changePage = (newPage) => {
   }
 };
 
-// 페이지 번호 범위 계산 (현재 페이지 기준으로 양옆 2개씩, 총 5개 버튼)
 const pageNumbers = computed(() => {
-  const range = 2; // 현재 페이지 기준 좌우 몇 개 보여줄지
+  const range = 2;
   let start = Math.max(1, props.page - range);
   let end = Math.min(props.total, props.page + range);
 
@@ -59,5 +90,3 @@ const pageNumbers = computed(() => {
   return pages;
 });
 </script>
-
-<style lang="scss" scoped></style>

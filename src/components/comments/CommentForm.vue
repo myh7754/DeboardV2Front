@@ -1,7 +1,26 @@
 <template>
-  <div class="comment-form">
-    <textarea v-model="content" placeholder="댓글을 입력하세요..."></textarea>
-    <button @click="submitComment" :disabled="loading || !content.trim()">등록</button>
+  <div class="bg-base-100 rounded-lg p-4 border border-base-300">
+    <div class="form-control">
+      <textarea 
+        v-model="content" 
+        placeholder="댓글을 입력하세요..." 
+        class="textarea textarea-bordered w-full focus:textarea-primary resize-none"
+        rows="3"
+      ></textarea>
+    </div>
+    <div class="flex justify-end mt-3">
+      <button 
+        @click="submitComment" 
+        :disabled="loading || !content.trim()"
+        class="btn btn-primary btn-sm gap-2"
+      >
+        <span v-if="loading" class="loading loading-spinner loading-xs"></span>
+        <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+        </svg>
+        {{ loading ? '등록중...' : '등록' }}
+      </button>
+    </div>
   </div>
 </template>
 
