@@ -7,10 +7,12 @@ export const usePostStore = defineStore('post', () => {
     const postDetail = ref(null);
     const page = ref(1);
     const totalPages = ref(1);
+    const keyword = ref('');
+    const searchType = ref('');
 
     const loadPosts = async (pageNumber = 1) => {
         try {
-            const data = await fetchPosts(pageNumber - 1, 2);
+            const data = await fetchPosts(pageNumber - 1, 10, keyword.value, searchType.value);
             posts.value = data.content;
             totalPages.value = data.page.totalPages;
             page.value = data.page.number + 1;
@@ -18,7 +20,11 @@ export const usePostStore = defineStore('post', () => {
             throw err;
         }
     };
-
+    const searchPosts = async (type, word, pageNumber = 1) => {
+        keyword.value = word;
+        searchType.value = type;
+        await loadPosts(pageNumber);
+    }
     const loadPostById = async (id) => {
         try {
             postDetail.value = await fetchPostById(id);
@@ -86,6 +92,7 @@ export const usePostStore = defineStore('post', () => {
 
     }
 
+
     return {
         posts,
         postDetail,
@@ -93,10 +100,13 @@ export const usePostStore = defineStore('post', () => {
         // error,
         totalPages,
         page,
+        keyword,
+        searchType,
         loadPosts,
         loadPostById,
         createPost,
         updatePostById,
         deletePost,
+        searchPosts,
     };
 })
