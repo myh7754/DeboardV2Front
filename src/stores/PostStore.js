@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { fetchPostById, fetchPosts, createPostApi, updatePost, deletePostById } from '../api/posts'
+import { likesStatus, toggleLikeApi } from '../api/likes'
 
 export const usePostStore = defineStore('post', () => {
     const posts = ref([])
@@ -27,9 +28,28 @@ export const usePostStore = defineStore('post', () => {
     }
     const loadPostById = async (id) => {
         try {
-            postDetail.value = await fetchPostById(id);
+            // 1) 상세 데이터 불러오기 (기본값 보정)
+            const detail = await fetchPostById(id);
+            postDetail.value = { likeCount: 0, liked: false, ...detail };
+
+            // 2) 상세 진입/새로고침 시에만 서버 좋아요 상태 동기화
+            //    실패해도 화면 표시에는 문제 없으므로 조용히 무시
+            likesStatus(id)
+                .then((status) => {
+                    if (!postDetail.value || postDetail.value.id !== id) return;
+                    // 서버가 boolean(true/false)만 반환하는 경우에 맞춰 처리
+                    if (typeof status === 'boolean') {
+                        postDetail.value.liked = status;
+                    } else if (status && typeof status.liked === 'boolean') {
+                        // 혹시 객체로 { liked, likeCount }를 반환하는 백엔드라면 안전 처리
+                        postDetail.value.liked = status.liked;
+                        if (typeof status.likeCount === 'number') {
+                            postDetail.value.likeCount = status.likeCount;
+                        }
+                    }
+                })
+                .catch(() => {});
         } catch (err) {
-            // error.value = err.response?.data?.message || "게시글을 불러오지 못했습니다.";
             throw err;
         }
     }
@@ -92,6 +112,80 @@ export const usePostStore = defineStore('post', () => {
 
     }
 
+    const toggleLikes = async (postId) => {
+        // 간단한 낙관적 업데이트: 한 번 계산 → 리스트/상세 동시에 반영
+        const listIndex = posts.value.findIndex((p) => p.id === postId);
+        const listItem = listIndex !== -1 ? posts.value[listIndex] : null;
+        const isDetailTarget = postDetail.value?.id === postId;
+        const currentLiked = (isDetailTarget ? !!postDetail.value.liked : !!listItem?.liked) || false;
+
+        const nextLiked = !currentLiked;
+        const delta = nextLiked ? 1 : -1;
+
+        // 낙관적 적용
+        if (listItem) {
+            posts.value[listIndex] = {
+                ...listItem,
+                liked: nextLiked,
+                likeCount: Math.max(0, (listItem.likeCount || 0) + delta),
+            };
+        }
+        if (isDetailTarget) {
+            postDetail.value = {
+                ...postDetail.value,
+                liked: nextLiked,
+                likeCount: Math.max(0, (postDetail.value.likeCount || 0) + delta),
+            };
+        }
+
+        // 서버 요청 (실패 시 롤백)
+        try {
+            await toggleLikeApi(postId);
+        } catch (err) {
+            if (listItem) {
+                const after = posts.value[listIndex];
+                posts.value[listIndex] = {
+                    ...after,
+                    liked: currentLiked,
+                    likeCount: Math.max(0, (after.likeCount || 0) - delta),
+                };
+            }
+            if (isDetailTarget) {
+                const after = postDetail.value;
+                postDetail.value = {
+                    ...after,
+                    liked: currentLiked,
+                    likeCount: Math.max(0, (after.likeCount || 0) - delta),
+                };
+            }
+            throw err;
+        }
+    }
+
+    const likesStatusByPost = async(postId) => {
+        try {
+            // 필요 시 외부에서 강제 동기화할 때 사용
+            const status = await likesStatus(postId);
+            const listIndex = posts.value.findIndex((p) => p.id === postId);
+            if (listIndex !== -1) {
+                posts.value[listIndex] = {
+                    ...posts.value[listIndex],
+                    liked: !!status?.liked,
+                    likeCount: typeof status?.likeCount === 'number' ? status.likeCount : (posts.value[listIndex].likeCount || 0)
+                };
+            }
+            if (postDetail.value?.id === postId) {
+                postDetail.value = {
+                    ...postDetail.value,
+                    liked: !!status?.liked,
+                    likeCount: typeof status?.likeCount === 'number' ? status.likeCount : (postDetail.value.likeCount || 0)
+                };
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
+
 
     return {
         posts,
@@ -108,5 +202,7 @@ export const usePostStore = defineStore('post', () => {
         updatePostById,
         deletePost,
         searchPosts,
+        toggleLikes,
+        likesStatusByPost
     };
 })

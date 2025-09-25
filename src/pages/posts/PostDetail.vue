@@ -43,7 +43,22 @@
               </div>
             </div>
           </div>
-          <div class="ml-4">
+          <div class="ml-4 flex items-center gap-2">
+            <button 
+              class="btn btn-ghost btn-sm gap-1"
+              :class="{ 'text-error': postStore.postDetail.liked }"
+              :disabled="!authStore.isLoggedIn"
+              @click="onClickLike(postStore.postDetail.id)"
+              aria-label="좋아요 토글"
+            >
+              <svg v-if="postStore.postDetail.liked" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+              </svg>
+              <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />
+              </svg>
+              <span class="text-sm">{{ postStore.postDetail.likeCount || 0 }}</span>
+            </button>
             <PostOptionMenu :postId="postStore.postDetail.id" />
           </div>
         </div>
@@ -82,6 +97,7 @@
 import { onMounted } from 'vue';
 import { usePostStore } from '../../stores/PostStore';
 import { useCommentsStore } from '../../stores/CommentStore';
+import { useAuthStore } from '../../stores/AuthStore';
 import { useRoute } from 'vue-router';
 import PostOptionMenu from '../../components/posts/PostOptionMenu.vue';
 import CommentsSection from '../comments/CommentsSection.vue';
@@ -89,6 +105,7 @@ import { useDateFormat } from '../../composable/useDateFormat';
 
 const postStore = usePostStore();
 const commentsStore = useCommentsStore();
+const authStore = useAuthStore();
 const route = useRoute();
 const postId = Number(route.params.id);
 const { formatDate } = useDateFormat();
@@ -102,6 +119,20 @@ onMounted(async () => {
     alert(err.response?.data?.message || "게시글을 불러오지 못했습니다.");
   }
 });
+
+const onClickLike = async (postId) => {
+  // 로그인 체크
+  if (!authStore.isLoggedIn) {
+    alert('로그인이 필요합니다.');
+    return;
+  }
+  
+  try {
+    await postStore.toggleLikes(postId);
+  } catch (err) {
+    alert(err.response?.data?.message || '좋아요 처리에 실패했습니다.');
+  }
+}
 </script>
 
 <style scoped lang="scss"></style>

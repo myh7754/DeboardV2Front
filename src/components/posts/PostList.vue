@@ -27,7 +27,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="ml-4" @click.stop>
+                    <div class="ml-4 flex items-center gap-2" @click.stop>
+                        <!-- 목록에선 좋아요 토글 비활성화: 숫자만 표시 -->
+                        <div class="inline-flex items-center gap-1 text-base-content/70" aria-hidden="true">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />
+                            </svg>
+                            <span class="text-sm">{{ post.likeCount || 0 }}</span>
+                        </div>
                         <PostOptionMenu :postId="post.id"/>
                     </div>
                 </div>
@@ -60,6 +67,8 @@ defineProps({
 defineEmits(['selectPost']);
 
 const { formatDate } = useDateFormat();
+
+// 목록에서는 좋아요 토글을 제공하지 않습니다.
 </script>
 
 <style lang="scss" scoped>

@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { checkNickname, sendEmailcode, verifyEmailCode, signUp, loginRequest, logout, oauthLoginRequest } from "../api/authApi";
+import { usePostStore } from "./PostStore";
 
 export const useAuthStore = defineStore("auth", () => {
     const loading = ref(false);
@@ -33,6 +34,16 @@ export const useAuthStore = defineStore("auth", () => {
     const handleLogout = async () => {
         const res = await logout();
         isLoggedIn.value = false;
+        
+        // 로그아웃 시 좋아요 상태 초기화 (새로고침 없이 즉시 반영)
+        const postStore = usePostStore();
+        if (postStore.postDetail) {
+            postStore.postDetail.liked = false;
+        }
+        // 목록의 모든 게시글 좋아요 상태도 초기화
+        postStore.posts.forEach(post => {
+            post.liked = false;
+        });
     };
     
     // const oauthLogin = async (provider, data) => {
