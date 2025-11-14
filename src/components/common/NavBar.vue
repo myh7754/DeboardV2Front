@@ -24,6 +24,15 @@
               게시글 생성
             </router-link>
           </li>
+          <li v-if="auth.isLoggedIn">
+            <router-link 
+              to="/rss/feeds" 
+              class="btn btn-ghost hover:btn-accent transition-all"
+              active-class="btn-accent"
+            >
+              RSS 피드 관리
+            </router-link>
+          </li>
         </ul>
       </div>
   

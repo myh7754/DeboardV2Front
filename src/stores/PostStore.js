@@ -14,10 +14,12 @@ export const usePostStore = defineStore('post', () => {
     const loadPosts = async (pageNumber = 1) => {
         try {
             const data = await fetchPosts(pageNumber - 1, 10, keyword.value, searchType.value);
-            posts.value = data.content;
-            totalPages.value = data.page.totalPages;
-            page.value = data.page.number + 1;
+            posts.value = data.content || [];
+            // 응답 구조: { content: [], page: { totalPages, number, ... } }
+            totalPages.value = data.page?.totalPages || 1;
+            page.value = (data.page?.number || 0) + 1;
         } catch (err) {
+            console.error('게시글 로딩 에러:', err);
             throw err;
         }
     };

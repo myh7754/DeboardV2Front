@@ -8,6 +8,7 @@ import LoginPage from '../pages/auth/LoginPage.vue'
 import PostCreatePage from '../pages/posts/PostCreatePage.vue'
 import PostDetail from '../pages/posts/PostDetail.vue'
 import PostEditPage from '../pages/posts/PostEditPage.vue'
+import UserFeedPage from '../pages/rss/UserFeedPage.vue'
 import { authCheck } from '../api/authApi'
 
 
@@ -29,6 +30,7 @@ const routes = [
                     entityType: "POST",
                     idParam: 'postId'
                 } },
+            { path: '/rss/feeds', component: UserFeedPage, meta: { requiresAuth: true } },
             { path: '/login', component: LoginPage },
             { path: '/signup', component: SignupPage },
             // { path: '/signup', component: SignUp },
