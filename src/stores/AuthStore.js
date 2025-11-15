@@ -44,6 +44,9 @@ export const useAuthStore = defineStore("auth", () => {
         postStore.posts.forEach(post => {
             post.liked = false;
         });
+        
+        // 로그아웃 후 페이지 새로고침
+        window.location.reload();
     };
     
     // const oauthLogin = async (provider, data) => {

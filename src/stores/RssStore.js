@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { registerUserFeed, getUserFeeds } from '../api/rssApi';
+import { registerUserFeed, getUserFeeds, deleteUserFeed } from '../api/rssApi';
 
 export const useRssStore = defineStore('rss', () => {
     const userFeeds = ref([]);
@@ -40,12 +40,30 @@ export const useRssStore = defineStore('rss', () => {
         }
     };
 
+    // 사용자 피드 삭제
+    const removeUserFeed = async (id) => {
+        loading.value = true;
+        error.value = null;
+        try {
+            await deleteUserFeed(id);
+            // 삭제 성공 시 목록에서 제거
+            userFeeds.value = userFeeds.value.filter(feed => feed.id !== id);
+            return true;
+        } catch (err) {
+            error.value = err.response?.data?.message || "피드 삭제 실패";
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     return {
         userFeeds,
         loading,
         error,
         addUserFeed,
         loadUserFeeds,
+        removeUserFeed,
     };
 });
 

@@ -12,3 +12,7 @@ export const registerUserFeed = (name, url) =>
 export const getUserFeeds = () => 
     api.get(`${API_URL}/user-feed`).then(res => res.data);
 
+// 사용자 피드 삭제
+export const deleteUserFeed = (id) => 
+    api.delete(`${API_URL}/user-feed/${id}`).then(res => res.data);
+

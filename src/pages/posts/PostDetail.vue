@@ -66,9 +66,10 @@
 
       <!-- 게시글 내용 -->
       <div class="prose prose-lg max-w-none">
-        <div class="whitespace-pre-wrap text-base-content leading-relaxed">
-          {{ postStore.postDetail.content }}
-        </div>
+        <div 
+          class="text-base-content leading-relaxed post-content"
+          v-html="sanitizedContent"
+        ></div>
       </div>
     </div>
 
@@ -94,19 +95,27 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 import { usePostStore } from '../../stores/PostStore';
 import { useAuthStore } from '../../stores/AuthStore';
 import { useRoute } from 'vue-router';
 import PostOptionMenu from '../../components/posts/PostOptionMenu.vue';
 import CommentsSection from '../comments/CommentsSection.vue';
 import { useDateFormat } from '../../composable/useDateFormat';
+import { sanitizeHtml } from '../../utils/htmlSanitizer';
 
 const postStore = usePostStore();
 const authStore = useAuthStore();
 const route = useRoute();
 const postId = Number(route.params.id);
 const { formatDate } = useDateFormat();
+
+// 게시글 내용을 HTML로 렌더링 (XSS 방지를 위해 sanitize)
+const sanitizedContent = computed(() => {
+  const content = postStore.postDetail?.content || '';
+  if (!content) return '';
+  return sanitizeHtml(content);
+});
 
 onMounted(async () => {
   try {
@@ -133,4 +142,53 @@ const onClickLike = async (postId) => {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+// 게시글 내용 스타일링
+:deep(.post-content) {
+  // 이미지가 컨테이너를 벗어나지 않도록
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  // 링크 스타일
+  a {
+    color: hsl(var(--p));
+    text-decoration: underline;
+    
+    &:hover {
+      color: hsl(var(--pf));
+    }
+  }
+
+  // 제목 스타일
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  // 리스트 스타일
+  ul, ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  // 코드 블록 스타일
+  code {
+    background-color: hsl(var(--b2));
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+  }
+
+  pre {
+    background-color: hsl(var(--b2));
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
+}
+</style>
