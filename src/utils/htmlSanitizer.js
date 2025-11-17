@@ -18,7 +18,7 @@ export const sanitizeHtml = (dirty, options = {}) => {
         ],
         ALLOWED_ATTR: [
             'href', 'title', 'alt', 'src', 'width', 'height', 'class', 'id',
-            'target', 'rel', 'style'
+            'target', 'rel', 'style', 'decoding', 'align', 'loading'
         ],
         ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|data):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
         // 스타일 속성도 허용 (필요시)

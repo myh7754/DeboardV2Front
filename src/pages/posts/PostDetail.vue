@@ -151,6 +151,47 @@ const onClickLike = async (postId) => {
     height: auto;
     border-radius: 0.5rem;
     margin: 1rem 0;
+    display: block;
+    
+    // width 속성이 있는 경우 처리
+    &[width] {
+      max-width: 100%;
+    }
+    
+    // align 속성에 따른 정렬 처리
+    &[align="left"] {
+      float: left;
+      margin-right: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    &[align="right"] {
+      float: right;
+      margin-left: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    &[align="center"] {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+  
+  // align 속성을 가진 p, div 태그 처리
+  p[align="center"],
+  div[align="center"] {
+    text-align: center;
+  }
+  
+  p[align="left"],
+  div[align="left"] {
+    text-align: left;
+  }
+  
+  p[align="right"],
+  div[align="right"] {
+    text-align: right;
   }
 
   // 링크 스타일
@@ -174,6 +215,35 @@ const onClickLike = async (postId) => {
   ul, ol {
     margin: 1rem 0;
     padding-left: 1.5rem;
+  }
+  
+  // blockquote 스타일 (인용문)
+  blockquote {
+    border-left: 4px solid hsl(var(--p));
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    background-color: hsl(var(--b2));
+    border-radius: 0.5rem;
+    font-style: italic;
+    color: hsl(var(--bc) / 0.8);
+    
+    p {
+      margin: 0.5rem 0;
+      
+      &:first-child {
+        margin-top: 0;
+      }
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+    
+    // blockquote 내부 링크 스타일
+    a {
+      color: hsl(var(--p));
+    }
   }
 
   // 코드 블록 스타일
