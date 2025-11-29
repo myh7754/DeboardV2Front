@@ -8,6 +8,7 @@ export const usePostStore = defineStore('post', () => {
     const postDetail = ref(null);
     const page = ref(1);
     const totalPages = ref(1);
+    const totalElements = ref(0); // 전체 게시글 개수
     const keyword = ref('');
     const searchType = ref('');
 
@@ -15,11 +16,23 @@ export const usePostStore = defineStore('post', () => {
         try {
             const data = await fetchPosts(pageNumber - 1, 10, keyword.value, searchType.value);
             posts.value = data.content || [];
-            // 응답 구조: { content: [], page: { totalPages, number, ... } }
-            totalPages.value = data.page?.totalPages || 1;
-            page.value = (data.page?.number || 0) + 1;
+            
+            // 응답 구조 확인: 백엔드가 래핑했을 수도 있고 직접 반환했을 수도 있음
+            // 래핑된 경우: { content: [], page: { totalPages, totalElements, number, ... } }
+            // 직접 반환: { content: [], totalPages, totalElements, number, ... }
+            
+            if (data.page) {
+                // 래핑된 경우
+                totalPages.value = data.page.totalPages || 1;
+                totalElements.value = data.page.totalElements || 0;
+                page.value = (data.page.number || 0) + 1;
+            } else {
+                // 직접 반환된 경우
+                totalPages.value = data.totalPages || 1;
+                totalElements.value = data.totalElements || 0;
+                page.value = (data.number || 0) + 1;
+            }
         } catch (err) {
-            console.error('게시글 로딩 에러:', err);
             throw err;
         }
     };
@@ -195,6 +208,7 @@ export const usePostStore = defineStore('post', () => {
         // isLoading,
         // error,
         totalPages,
+        totalElements, // 전체 게시글 개수 추가
         page,
         keyword,
         searchType,

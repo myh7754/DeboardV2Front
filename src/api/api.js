@@ -3,9 +3,9 @@ import createAuthRefreshInterceptor from "axios-auth-refresh";
 import { useAuthStore } from "../stores/AuthStore";
 import router from "../router";
 
-const base = "http://localhost:8080/api";
+const baseURL = import.meta.env.VITE_API_BASE_URL || "/api";
 const api = axios.create({
-  baseURL: base,
+  baseURL,
   withCredentials: true, // 쿠키 자동 포함
 });
 
@@ -17,7 +17,7 @@ const refreshAuthLogic = async (failedRequest) => {
     // refresh 성공 → failedRequest 재시도 가능
     return Promise.resolve();
   } catch (err) {
-    axios.post(`${base}/auth/refresh/logout`);
+    axios.post(`${baseURL}/auth/refresh/logout`, null, { withCredentials: true });
     authStore.isLoggedIn = false;
     router.push("/");
     return Promise.reject(err);

@@ -4,7 +4,7 @@
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold text-base-content">게시글 목록</h1>
       <div class="text-sm text-base-content/70">
-        총 {{ postStore.totalPages * 10 }}개의 게시글
+        총 {{ postStore.totalElements }}개의 게시글
       </div>
     </div>
 
@@ -60,7 +60,6 @@ watch(() => route.query, async (newQuery) => {
       await postStore.loadPosts(page);
     }
   } catch (err) {
-    console.error("게시글 목록 로딩 에러:", err);
     alert(err.response?.data?.message || "게시글 목록을 불러오지 못했습니다.");
   }
 }, { immediate: true });

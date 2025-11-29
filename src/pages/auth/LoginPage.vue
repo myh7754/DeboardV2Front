@@ -126,7 +126,6 @@ const handleLogin = async () => {
         await auth.login(form);
         router.push("/");
     } catch (err) {
-        console.log(err);
         alert(err.response?.data?.message || "로그인에 실패하였습니다.")
     }
 }

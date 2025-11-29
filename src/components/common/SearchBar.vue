@@ -75,7 +75,6 @@
         }
       })
     } catch (err) {
-      console.error("검색 중 오류 발생:", err)
       alert(err.response?.data?.message || "검색 중 오류가 발생했습니다.")
     }
   }
@@ -93,7 +92,6 @@
         }
       })
     } catch (err) {
-      console.error("검색 초기화 중 오류 발생:", err)
       alert(err.response?.data?.message || "검색 초기화 중 오류가 발생했습니다.")
     }
   }

@@ -44,7 +44,7 @@ const handleFeedAdded = async () => {
     try {
         await rssStore.loadUserFeeds();
     } catch (err) {
-        console.error('피드 목록 새로고침 실패:', err);
+        // 피드 목록 새로고침 실패 시 조용히 처리
     }
 };
 </script>

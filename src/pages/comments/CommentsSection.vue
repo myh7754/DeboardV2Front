@@ -57,12 +57,10 @@ const totalPages = ref(1);
 const loadComments = async (newPage = 1) => {
   try {
     const res = await commentsStore.loadComments(props.postId, newPage);
-    console.log(res);
     comments.value = res.content;
     page.value = res.page.number + 1;
     totalPages.value = res.page.totalPages;
   } catch (err) {
-    console.error(err);
     alert(err.response?.data?.message || "댓글 불러오는 중 오류가 발생했습니다.");
   }
 };
@@ -72,7 +70,6 @@ const changePage = async (newPage) => {
   try {
     await loadComments(newPage);
   } catch (err) {
-    console.error(err);
     alert("페이지 이동 중 오류가 발생했습니다.");
   }
 };
@@ -82,7 +79,6 @@ const refreshComments = async () => {
   try {
     await loadComments(1);
   } catch (err) {
-    console.error(err);
     alert("댓글 새로고침 중 오류가 발생했습니다.");
   }
 };

@@ -1,9 +1,9 @@
-import axios from 'axios';
+import api from './api';
 
-const API_URL = 'http://localhost:8080/api/search';
+const API_URL = '/search';
 
 export const searchPost = async (searchType ,keyword, page, size) => {
-    const response = await axios.get(`${API_URL}/post`, {
+    const response = await api.get(`${API_URL}/post`, {
         params: {
             searchType,
             keyword,

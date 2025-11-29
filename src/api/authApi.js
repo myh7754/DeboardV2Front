@@ -1,7 +1,8 @@
 import api from "./api";
 
 const API_URL = '/auth';
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 export const checkNickname = async (nickname) => {
     await api.get(`${API_URL}/valid/nickname`, { params: { nickname } });
@@ -33,7 +34,8 @@ export const logout = async () => {
 }
 
 export const oauthLoginRequest = async (provider) => {
-    window.location.href = `${baseURL}/oauth2/authorization/${provider}`;
+    // OAuth 리다이렉트도 프록시를 통해 백엔드로 전달
+    window.location.href = `${BACKEND_URL}/oauth2/authorization/${provider}`;
 }
 
 export const authCheck = async (entityType, id) => {

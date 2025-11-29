@@ -187,7 +187,7 @@ const checkRepliesCount = async () => {
     // const res = await commentsStore.loadReplies(commentId, 1);
     hasReplies.value = props.comment.repliesCount > 0;
   } catch (err) {
-    console.error("대댓글 개수 확인 에러:", err);
+    // 대댓글 개수 확인 실패 시 조용히 처리
   }
 };
 
@@ -203,9 +203,6 @@ const cancelEdit = () => {
 
 const confirmEdit = async () => {
   try {
-    console.log("댓글 데이터:", props.comment);
-    console.log("댓글 ID:", props.comment.commentsId || props.comment.commentId);
-    
     const commentId = props.comment.commentsId || props.comment.commentId;
     await commentsStore.updateComment(
       commentId, 
@@ -253,7 +250,7 @@ const loadReplies = async (pageNum = 1) => {
     replyTotalPages.value = res.page.totalPages;
     hasReplies.value = res.content.length > 0;
   } catch (err) {
-    console.error("대댓글 로딩 에러:", err);
+    // 대댓글 로딩 실패 시 조용히 처리
   }
 };
 
