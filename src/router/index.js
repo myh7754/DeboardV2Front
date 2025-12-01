@@ -10,6 +10,7 @@ import PostDetail from '../pages/posts/PostDetail.vue'
 import PostEditPage from '../pages/posts/PostEditPage.vue'
 import UserFeedPage from '../pages/rss/UserFeedPage.vue'
 import { authCheck } from '../api/authApi'
+import LikedPostsPage from '../pages/posts/LikedPostsPage.vue'
 
 
 const routes = [
@@ -33,6 +34,7 @@ const routes = [
             { path: '/rss/feeds', component: UserFeedPage, meta: { requiresAuth: true } },
             { path: '/login', component: LoginPage },
             { path: '/signup', component: SignupPage },
+            { path: '/posts/liked',component: LikedPostsPage, meta: { requiresAuth: true }},
             // { path: '/signup', component: SignUp },
         ],
     },

@@ -26,6 +26,15 @@
           </li>
           <li v-if="auth.isLoggedIn">
             <router-link 
+              to="/posts/liked" 
+              class="btn btn-ghost hover:btn-accent transition-all"
+              active-class="btn-accent"
+            >
+              좋아요 목록
+            </router-link>
+          </li>
+          <li v-if="auth.isLoggedIn">
+            <router-link 
               to="/rss/feeds" 
               class="btn btn-ghost hover:btn-accent transition-all"
               active-class="btn-accent"

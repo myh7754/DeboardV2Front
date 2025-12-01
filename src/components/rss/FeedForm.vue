@@ -35,12 +35,12 @@
                     v-model="form.url" 
                     type="url" 
                     required
-                    placeholder="https://velog.io/@username/rss"
+                    placeholder="https://velog.io/@username/posts"
                     class="input input-bordered w-full focus:input-primary font-mono text-sm" 
                 />
                 <label class="label">
                     <span class="label-text-alt text-base-content/50">
-                        예시: https://velog.io/@username, https://username.tistory.com
+                        예시: https://velog.io/@username/posts, https://username.tistory.com
                     </span>
                 </label>
             </div>

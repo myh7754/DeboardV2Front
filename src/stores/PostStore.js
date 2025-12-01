@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { fetchPostById, fetchPosts, createPostApi, updatePost, deletePostById } from '../api/posts'
+import { fetchPostById, fetchPosts, createPostApi, updatePost, deletePostById, fetchPostsByLike } from '../api/posts'
 import { likesStatus, toggleLikeApi } from '../api/likes'
 
 export const usePostStore = defineStore('post', () => {
@@ -21,6 +21,17 @@ export const usePostStore = defineStore('post', () => {
             // 래핑된 경우: { content: [], page: { totalPages, totalElements, number, ... } }
             // 직접 반환: { content: [], totalPages, totalElements, number, ... }
             
+            // 디버깅: 실제 응답 구조 확인 (개발 환경에서만)
+            if (process.env.NODE_ENV === 'development') {
+                console.log('게시글 응답 데이터 구조:', {
+                    hasPage: !!data.page,
+                    hasTotalPages: !!data.totalPages,
+                    hasTotalElements: !!data.totalElements,
+                    pageKeys: data.page ? Object.keys(data.page) : null,
+                    dataKeys: Object.keys(data)
+                });
+            }
+            
             if (data.page) {
                 // 래핑된 경우
                 totalPages.value = data.page.totalPages || 1;
@@ -33,6 +44,7 @@ export const usePostStore = defineStore('post', () => {
                 page.value = (data.number || 0) + 1;
             }
         } catch (err) {
+            console.error('게시글 로딩 에러:', err);
             throw err;
         }
     };
@@ -41,6 +53,7 @@ export const usePostStore = defineStore('post', () => {
         searchType.value = type;
         await loadPosts(pageNumber);
     }
+    
     const loadPostById = async (id) => {
         try {
             // 1) 상세 데이터 불러오기 (기본값 보정)
@@ -201,6 +214,21 @@ export const usePostStore = defineStore('post', () => {
         }
     }
 
+    const loadLikedPosts = async (pageNumber = 1, keyword ='', searchType = '') => {
+        try {
+            const data = await fetchPostsByLike(pageNumber - 1, 10,keyword,searchType);
+            posts.value = data.content || [];
+            totalPages.value = data.totalPages || 1;
+            totalElements.value = data.totalElements || 0;
+            page.value = pageNumber;
+        } catch (err) {
+            console.error('좋아요한 게시글 로딩 에러:', err);
+            throw err;
+        }
+    };
+
+
+
 
     return {
         posts,
@@ -219,6 +247,7 @@ export const usePostStore = defineStore('post', () => {
         deletePost,
         searchPosts,
         toggleLikes,
-        likesStatusByPost
+        likesStatusByPost,
+        loadLikedPosts
     };
 })
