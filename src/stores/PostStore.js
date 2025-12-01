@@ -216,11 +216,15 @@ export const usePostStore = defineStore('post', () => {
 
     const loadLikedPosts = async (pageNumber = 1, keyword ='', searchType = '') => {
         try {
-            const data = await fetchPostsByLike(pageNumber - 1, 10,keyword,searchType);
+            const data = await fetchPostsByLike(pageNumber - 1, 10, keyword, searchType);
+            // response shape: { content: [...], page: { number, totalPages, totalElements, size } }
             posts.value = data.content || [];
-            totalPages.value = data.totalPages || 1;
-            totalElements.value = data.totalElements || 0;
-            page.value = pageNumber;
+            // use nested page object
+            const pageInfo = data.page || {};
+            totalPages.value = pageInfo.totalPages ?? 1;
+            totalElements.value = pageInfo.totalElements ?? 0;
+            page.value = (pageInfo.number ?? 0) + 1;
+                
         } catch (err) {
             console.error('좋아요한 게시글 로딩 에러:', err);
             throw err;
