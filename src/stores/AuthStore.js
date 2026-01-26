@@ -23,7 +23,8 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     const login = async (form) => {
-        await loginRequest(form);
+        const res = await loginRequest(form);
+        console.log("비밀번호 요청 ", res);
         isLoggedIn.value = true;
     };
 
