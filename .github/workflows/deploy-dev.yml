@@ -27,13 +27,13 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: yhfmg/deboard-frontend:dev
-          cache-from: type=registry,ref=yhfmg/deboard-frontend:buildcache-dev
-          cache-to: type=registry,ref=yhfmg/deboard-frontend:buildcache-dev,mode=max
+          tags: yhfmg/deboard-frontend:latest
+          cache-from: type=registry,ref=yhfmg/deboard-frontend:buildcache
+          cache-to: type=registry,ref=yhfmg/deboard-frontend:buildcache,mode=max
 
       - name: Deploy
         run: |
           cd /home/myh7754/deboard
-          docker pull yhfmg/deboard-frontend:dev
+          docker pull yhfmg/deboard-frontend:latest
           docker compose up -d --no-deps frontend
           docker image prune -f
