@@ -3,9 +3,6 @@
     <!-- 페이지 헤더 -->
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold text-base-content">게시글 목록</h1>
-      <div class="text-sm text-base-content/70">
-        총 {{ postStore.totalElements }}개의 게시글
-      </div>
     </div>
 
     <!-- 게시글 목록 -->

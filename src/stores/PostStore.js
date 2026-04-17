@@ -8,7 +8,6 @@ export const usePostStore = defineStore('post', () => {
     const postDetail = ref(null);
     const page = ref(1);
     const totalPages = ref(1);
-    const totalElements = ref(0); // 전체 게시글 개수
     const keyword = ref('');
     const searchType = ref('');
 
@@ -35,12 +34,10 @@ export const usePostStore = defineStore('post', () => {
             if (data.page) {
                 // 래핑된 경우
                 totalPages.value = data.page.totalPages || 1;
-                totalElements.value = data.page.totalElements || 0;
                 page.value = (data.page.number || 0) + 1;
             } else {
                 // 직접 반환된 경우
                 totalPages.value = data.totalPages || 1;
-                totalElements.value = data.totalElements || 0;
                 page.value = (data.number || 0) + 1;
             }
         } catch (err) {
@@ -222,7 +219,6 @@ export const usePostStore = defineStore('post', () => {
             // use nested page object
             const pageInfo = data.page || {};
             totalPages.value = pageInfo.totalPages ?? 1;
-            totalElements.value = pageInfo.totalElements ?? 0;
             page.value = (pageInfo.number ?? 0) + 1;
                 
         } catch (err) {
@@ -240,7 +236,6 @@ export const usePostStore = defineStore('post', () => {
         // isLoading,
         // error,
         totalPages,
-        totalElements, // 전체 게시글 개수 추가
         page,
         keyword,
         searchType,
