@@ -3,9 +3,6 @@
     <!-- 페이지 헤더 -->
     <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold text-base-content">좋아요한 게시글</h1>
-      <div class="text-sm text-base-content/70" v-if="postStore.posts.length > 0">
-        총 {{ postStore.totalElements }}개의 게시글
-      </div>
     </div>
 
     <!-- 게시글 목록 -->
@@ -64,9 +61,6 @@ const handlePageChange = (page) => {
 onMounted(async () => {
   await postStore.loadLikedPosts(route.query.page || 1);
 
-  console.log("DEBUG: page =", postStore.page);
-  console.log("DEBUG: totalPages =", postStore.totalPages);
-  console.log("DEBUG: totalElements =", postStore.totalElements);
 });
 
 // URL 쿼리 파라미터 변경 감지
