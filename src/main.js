@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router';
 import { createPinia } from 'pinia';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
+import { setupDevtoolsGuard } from './utils/devtoolsGuard';
 
 
 // // Vuetify import
@@ -24,4 +25,9 @@ pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 app.use(router);
 // app.use(vuetify);
+
+if (import.meta.env.PROD) {
+	setupDevtoolsGuard();
+}
+
 app.mount('#app');

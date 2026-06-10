@@ -9,6 +9,10 @@ export default defineConfig(({ mode }) => {
   
   return {
     plugins: [vue()],
+    build: {
+      // Disable sourcemaps in production so minified code can't be reverse-mapped
+      sourcemap: false
+    },
     server: {
       proxy: {
         '/api': {
