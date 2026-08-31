@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { fetchPostById, fetchPosts, createPostApi, updatePost, deletePostById, fetchPostsByLike } from '../api/posts'
+import { fetchPostById, fetchPosts, fetchPostsByCursor, createPostApi, updatePost, deletePostById, fetchPostsByLike } from '../api/posts'
 import { likesStatus, toggleLikeApi } from '../api/likes'
 
 export const usePostStore = defineStore('post', () => {
@@ -10,11 +10,17 @@ export const usePostStore = defineStore('post', () => {
     const totalPages = ref(1);
     const keyword = ref('');
     const searchType = ref('');
+    const nextCursor = ref(null);
+    const hasNext = ref(false);
+    const loadingMore = ref(false);
 
     const loadPosts = async (pageNumber = 1) => {
         try {
             const data = await fetchPosts(pageNumber - 1, 10, keyword.value, searchType.value);
             posts.value = data.content || [];
+            // offset 응답에도 커서가 실려온다 — 이후 '더 보기'는 keyset으로 이어감
+            nextCursor.value = data.nextCursor ?? null;
+            hasNext.value = !!data.hasNext;
             
             // 응답 구조 확인: 백엔드가 래핑했을 수도 있고 직접 반환했을 수도 있음
             // 래핑된 경우: { content: [], page: { totalPages, totalElements, number, ... } }
@@ -45,6 +51,20 @@ export const usePostStore = defineStore('post', () => {
             throw err;
         }
     };
+    // keyset 경로: 마지막 행의 커서를 되돌려주면 서버가 WHERE 조건으로 이어붙인다
+    const loadMore = async () => {
+        if (loadingMore.value || !hasNext.value || !nextCursor.value) return;
+        loadingMore.value = true;
+        try {
+            const data = await fetchPostsByCursor(nextCursor.value, 10);
+            posts.value = [...posts.value, ...(data.content || [])];
+            nextCursor.value = data.nextCursor ?? null;
+            hasNext.value = !!data.hasNext;
+        } finally {
+            loadingMore.value = false;
+        }
+    };
+
     const searchPosts = async (type, word, pageNumber = 1) => {
         keyword.value = word;
         searchType.value = type;
@@ -239,7 +259,11 @@ export const usePostStore = defineStore('post', () => {
         page,
         keyword,
         searchType,
+        nextCursor,
+        hasNext,
+        loadingMore,
         loadPosts,
+        loadMore,
         loadPostById,
         createPost,
         updatePostById,

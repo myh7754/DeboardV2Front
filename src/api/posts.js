@@ -4,6 +4,8 @@ const API_URL = '/posts';
 
 export const fetchPosts = (page = 0, size = 10, keyword ='', searchType ='') => api.get(API_URL, { params: { page, size, keyword, searchType } }).then(res => res.data);
 
+export const fetchPostsByCursor = (cursor, size = 10) => api.get(API_URL, { params: { cursor, size } }).then(res => res.data);
+
 export const fetchPostById = (id) => api.get(`${API_URL}/${id}`).then(res => res.data);
 
 export const createPostApi = (postData) => api.post(API_URL, postData).then(res => res.data);

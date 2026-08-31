@@ -10,6 +10,16 @@
       <PostList :posts="postStore.posts" @selectPost="handleSelectPost" />
     </div>
 
+    <!-- 더 보기: keyset 경로. 검색 중에는 서버가 offset만 지원하므로 숨김 -->
+    <button
+      v-if="postStore.hasNext && !postStore.keyword"
+      class="btn btn-outline w-full"
+      :disabled="postStore.loadingMore"
+      @click="postStore.loadMore()"
+    >
+      {{ postStore.loadingMore ? '불러오는 중...' : '더 보기' }}
+    </button>
+
     <!-- 검색창 컴포넌트 -->
     <SearchBar />
 
