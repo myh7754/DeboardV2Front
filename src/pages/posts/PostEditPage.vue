@@ -91,20 +91,15 @@ const form = reactive({
     content: ''
 });
 
+// 목록 캐시에는 본문이 없고, 있더라도 낡은 값일 수 있으므로 항상 상세를 새로 조회한다
 onMounted(async () => {
-    let post = postStore.posts.find(p => p.id === postId);
-    if (post) {
-        form.title = post.title;
-        form.content = post.content;
-    } else {
-        try {
-            await postStore.loadPostById(postId);
-            form.title = postStore.postDetail.title;
-            form.content = postStore.postDetail.content;
-        } catch (err) {
-            alert(err.response?.data?.message || '게시글을 불러오지 못했습니다.');
-            router.back();
-        }
+    try {
+        await postStore.loadPostById(postId);
+        form.title = postStore.postDetail.title;
+        form.content = postStore.postDetail.content;
+    } catch (err) {
+        alert(err.response?.data?.message || '게시글을 불러오지 못했습니다.');
+        router.back();
     }
 })
 
